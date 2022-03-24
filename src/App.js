@@ -1,23 +1,24 @@
-import logo from './logo.svg';
+import data from './data';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+        <div className='song-wrapper'>
+            <h1>Playlist</h1>
+            <div className='song'>
+              <div className='song-img'>
+                <img src={data.album.images[0].url}/>
+              </div>
+              <div className='song-info'>
+                <p className='song-title'>{data.name}</p>
+                <p className='song-artist'>{data.artists[0].name}</p>
+              </div>
+            <div>
+                <button className='btn'>Select</button>
+            </div>
+          </div>
+        </div>
     </div>
   );
 }
