@@ -5,3 +5,10 @@
 .song-section{
     padding-top: 10px;
 }
+.row{
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-gap: 10px;
+    background-color: #353535;
+    padding: 10px
+}

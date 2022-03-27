@@ -9,8 +9,13 @@ function HomePage(props) {
     <div className='home'>
       <div className='song-section'>
         <HomeTitle title="Song"/>
-        <SongCard data={data}/>]
-        <SongCard data={data}/>]
+        <div className='row'>
+          {data.map((song,idx)=>(
+              <SongCard 
+              data={song} 
+              key ={idx}/>
+            ))}
+        </div>
       </div>
     </div>
   );
