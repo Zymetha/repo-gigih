@@ -19,31 +19,39 @@
     border-radius: 50px;
   }
   
-  .btn {
-    width: 100px;
-    height: 30px;
-    border-radius: 10px;
-  }
+.btn{
+  width: 100px;
+  height: 30px;
+  border-radius: 10px;
+}
+
+.btn:hover {
+  box-shadow: 0 0 5px #32a71b, 0 0 25px #32a71b;
+  -webkit-box-reflect: below 1px linear-gradient(transparent), #000000;
+}
   
-  .song-title {
-    font-size: 18px;
-    margin-bottom: 2px;
-  }
-  .song-album{
-    font-size: 14px;
-    margin-bottom: 2px;
-  }
+.song-title {
+  font-size: 18px;
+  margin-bottom: 2px; 
+}
+.song-album{
+  font-size: 14px;
+  margin-bottom: 2px;
+}
   
-  .song-artist {
-    font-size: 15px;
-    margin-top: 2px;
-    margin-bottom: 20px;
-  }
+.song-artist {
+  font-size: 15px;
+  margin-top: 2px;
+  margin-bottom: 20px;
+}
   
-  .select {
-    color: white;
-    text-transform: uppercase;
-    font-weight: bold;
-    background-color: #1b68a7;
-  } 
+.select {
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+} 
   
+.selected{
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  background-color: #78ce7c;
+}
