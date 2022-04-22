@@ -1,0 +1,17 @@
+.input-playlist{
+    font-size: 14;
+}
+.playlist-name{
+    color: aliceblue;
+}
+
+.playlist-desc{
+    color: aliceblue;
+}
+
+.input-playlist{
+    display: block;
+    text-align: center;
+    margin: 6px auto;
+    font-size: 14px;
+}

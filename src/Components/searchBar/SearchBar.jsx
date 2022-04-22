@@ -1,12 +1,14 @@
-import React from "react";
+import './SearchBar.css';
 
-function SearchBar(){
+function SearchBar({handleInput, handleSearch}){
     return (
-        <div className="searchbar">
-            <input type="text"/>
-            <input type= "submit" value="search"/>
-        </div>
-    )
+        <>
+        <form className="searchbar" onSubmit={handleSearch}>
+            <input type="text" onChange={handleInput}/>
+            <input type="submit"/>
+        </form>
+        </>
+    );
 }
 
-export default SearchBar;
+export default SearchBar;       
