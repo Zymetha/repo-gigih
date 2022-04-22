@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveToken } from '../../redux/userToken';
+
 import './Home.css';
 import SongCard from '../../Components/songCard/SongCard';
 import Navbar from '../../Components/navbar/Navbar';
@@ -12,36 +15,28 @@ const SCOPES = ["playlist-modify-private", "user-read-private"];
 const SPACE_DELIMITER = "%20";
 const SCOPES_URL_PARAM = SCOPES.join(SPACE_DELIMITER);
 
-function HomePage() {
-  const [authToken, setAuthToken] = useState("");
+function HomePage() { 
   const [searchKey, setSearchKey] = useState("");
   const [songData, setSongData] = useState([]);
   const [selectedSong, setSelectedSong] = useState([]);
   const [isAuthorize, setIsAuthorize] = useState(false);
-  const [playlistInfo, setPlaylistInfo] =useState({
-    "name": "",
-    "description": ""
-  });
+  
+  const { token } = useSelector((state) => state.userToken);
+  const dispatch = useDispatch;
 
   const getReturnSpotifyAuth = (hash) => {
-  const stringAfterHash = hash.substring(1);
-  const urlParams = stringAfterHash.split("&");
-  const paramSplitUp = urlParams.reduce((accumulater, currentValue) => {
+    const stringAfterHash = hash.substring(1);
+    const urlParams = stringAfterHash.split("&");
+    const paramSplitUp = urlParams.reduce((accumulater, currentValue) => {
     const [key, value] = currentValue.split("=");
     accumulater[key]=value;
     return accumulater;
   }, {});
-  setAuthToken(paramSplitUp.access_token);
+  dispatch(saveToken(paramSplitUp.access_token));
   setIsAuthorize(true);
   };
 
-  useEffect(()=> {
-    if (window.location.hash){
-      getReturnSpotifyAuth(window.location.hash);
-    }
-  }, []);
-
-  const handleInput = (e)=> {
+  function handleInput(e) {
     setSearchKey(e.target.value);
   }
   
@@ -57,7 +52,7 @@ function HomePage() {
   try {
     const response = await fetch(`${url}?q=${keywords}&type=${type}&limit=10`, {
       headers: {
-        'authorization' : 'Bearer ' + authToken
+        'authorization' : 'Bearer ' + token
       }
     })
     if (!response.ok) {
@@ -89,117 +84,19 @@ function HomePage() {
     arrSongId.splice(index, 1);
     setSelectedSong(arrSongId);
   }
-  const handleFormPlaylist = (e) => {
-    const {name, value} = e.target;
-    setPlaylistInfo({...playlistInfo, [name]: value});
-  }
 
-  const createPlaylist = async (userID) => {
-  const url ="https://api.spotify.com/v1/users/";
-  const playlistparam = {
-    ...playlistInfo,
-    'public': false,
-    'collaborative': false,
-  }
-  try {
-    const response = await fetch(`${url}${userID}/playlists`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer' + authToken,
-        'content-Type': 'application/json',
-      },
-      body: JSON.stringify(playlistparam)
-    });
-      if (!response.ok) {
-        switch (response.status) {
-          case 401:
-            throw new Error(`Please login`);
-          case 403:
-            throw new Error(`Forbidden access`);
-          default:
-           throw new Error(`${response.status}`);
-        }
-      } else {
-        const playlistData = await response.json()
-        return playlistData.id;
-      }
-    } catch (error) {
-      alert(`problem error: ${error.message}`);
+  useEffect(()=> {
+    if (window.location.hash){
+      getReturnSpotifyAuth(window.location.hash);
     }
-  } 
-
-  const fetchProfile = async () => {
-    const url = "https://api.spotify.com/v1/me";
-    try {
-      const response = await fetch(`${url}`, {
-        headers: {
-          'authorization' : 'Bearer ' + authToken
-        }
-      });
-        if (!response.ok) {
-          switch (response.status) {
-            case 401:
-              throw new Error(`Please login`);
-            case 403:
-              throw new Error(`Forbidden access`);
-            default:
-             throw new Error(`${response.status}`);
-          }
-        } else {
-          const userData = await response.json()
-          return userData.id;
-        }
-      } catch (error) {
-        alert(`problem error: ${error.message}`);
-      }
-    } 
-
-  const addItemToPlaylist = async (playlistId) => {
-    const url ="https://api.spotify.com/v1/playlists/";
-    const tracksparam = {
-      'uris': selectedSong
-    }
-    try {
-      const response = await fetch (`${url}${playlistId}/tracks`, {
-        method: 'POST',
-        headers: {
-          'authorization' : 'Bearer ' +authToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(tracksparam)
-      })
-      if (!response.ok) {
-        switch (response.status) {
-          case 401:
-            throw new Error(`Please login`);
-          case 403:
-            throw new Error(`Forbidden access`);
-          default:
-            throw new Error(`${response.status}`);
-        }
-      } else {
-        const addedTracks = await response.json()
-        return addedTracks;
-      }
-    } catch (error) {
-      alert(`problem error: ${error.message}`);
-    }
-  }
-
-  const handleCreatePlaylist = async (e) => {
-      e.preventDefault();
-      const userID = await fetchProfile();
-      const playlistID = await createPlaylist(userID);
-      const snapshotID = await addItemToPlaylist(playlistID);
-      alert(`Playlist has been added ${snapshotID.snapshot_id}`)
-  }
+  }, []);
 
   return (
     <div className='home'>
       <div className='song-section'>
         <Navbar title="Song"/>
         <button className="login-btn" onClick = {handleLogin}>Login</button>
-        <PlaylistForm handleFormPlaylist={handleFormPlaylist} handleCreatePlaylist={handleCreatePlaylist}/>
+        <PlaylistForm selectedSong={selectedSong}/>
 
         <SearchBar handleInput={handleInput} handleSearch={handleSearch}/>
     
@@ -214,7 +111,6 @@ function HomePage() {
               return <SongCard data={song} key={song.uri} select={selectSong} deselect={deselectSong} isSelected={true}/>
             })
           }
-
           {
             songData
             .filter((song) => {
